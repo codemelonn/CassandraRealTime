@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earthquake Data Viewer</title>
+    <style>
+        #results { margin-top: 20px; }
+        .earthquake { margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Earthquake Data Viewer</h1>
+    
+    <div>
+        <label for="starttime">Start Time:</label>
+        <input type="date" id="starttime">
+        
+        <label for="endtime">End Time:</label>
+        <input type="date" id="endtime">
+        
+        <label for="minmagnitude">Min Magnitude:</label>
+        <input type="number" id="minmagnitude" step="0.1" min="0" value="4.5">
+        
+        <button id="fetchBtn">Fetch Earthquakes</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        document.getElementById('fetchBtn').addEventListener('click', fetchEarthquakes);
+        
+        function fetchEarthquakes() {
+            const starttime = document.getElementById('starttime').value;
+            const endtime = document.getElementById('endtime').value;
+            const minmagnitude = document.getElementById('minmagnitude').value;
+            
+            // Set default dates if not provided
+            const today = new Date().toISOString().split('T')[0];
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            const oneWeekAgoStr = oneWeekAgo.toISOString().split('T')[0];
+            
+            let url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson';
+            
+            url += `&starttime=${starttime || oneWeekAgoStr}`;
+            url += `&endtime=${endtime || today}`;
+            url += `&minmagnitude=${minmagnitude || 4.5}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => displayResults(data))
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('results').innerHTML = 
+                        `<p>Error fetching data: ${error.message}</p>`;
+                });
+        }
+        
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!data.features || data.features.length === 0) {
+                resultsDiv.innerHTML = '<p>No earthquakes found for the selected criteria.</p>';
+                return;
+            }
+            
+            let html = `<h2>${data.features.length} Earthquakes Found</h2>`;
+            
+            data.features.forEach(quake => {
+                const props = quake.properties;
+                html += `
+                    <div class="earthquake">
+                        <h3>Magnitude ${props.mag} - ${props.place}</h3>
+                        <p>Time: ${new Date(props.time).toLocaleString()}</p>
+                        <p>Depth: ${quake.geometry.coordinates[2]} km</p>
+                        <p>More info: <a href="${props.url}" target="_blank">USGS Details</a></p>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        // Initialize with default dates
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            const oneWeekAgoStr = oneWeekAgo.toISOString().split('T')[0];
+            
+            document.getElementById('starttime').value = oneWeekAgoStr;
+            document.getElementById('endtime').value = today;
+        };
+    </script>
+</body>
+</html>
