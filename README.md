@@ -111,3 +111,6 @@ This will create the keyspace, define the table, and insert sample earthquakes f
 - USGS API: https://earthquake.usgs.gov/fdsnws/event/1/
 - Baeldung Cassandra Cheatsheet: https://www.baeldung.com/cassandra-query-cheat-sheet
 - Tutorials: YouTube links in assignment
+
+## ⚠️ Disclaimer
+This project was created for academic/demo purposes. Please do not reuse, submit, or distribute this work as your own.
