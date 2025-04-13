@@ -42,3 +42,13 @@ WHERE ei.id IN (
 SELECT * 
 FROM earth_info
 WHERE magnitude > 5 AND location LIKE '%San Francisco%';
+
+
+## Get earthquake by location
+SELECT * FROM earth_info WHERE location = 'Los Angeles';
+
+## Most Recent Damage Reports
+SELECT * FROM earthquake_damage 
+WHERE earthquake_id = 'ba275b5c-8ddf-4499-b1b8-594f6757053a'
+ORDER BY damage_id DESC
+LIMIT 5;

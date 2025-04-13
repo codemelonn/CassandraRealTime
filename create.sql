@@ -30,10 +30,10 @@ CREATE TABLE IF NOT EXISTS person_damage (
 
 -- Insert Earthquake Records
 INSERT INTO earth_info (id, event_time, location, magnitude)
-VALUES (UUID(), '2011-02-03 04:05:00', 'New Mexico', 5.1);
+VALUES ('def664be-d66f-4769-8d09-b6387d1b5581', '2011-02-03 04:05:00', 'New Mexico', 5.1);
 
 INSERT INTO earth_info (id, event_time, location, magnitude)
-VALUES (UUID(), '2025-02-24 04:05:00', 'San Francisco', 5.8);
+VALUES ('UUID()', '2025-02-24 04:05:00', 'San Francisco', 5.8);
 
 INSERT INTO earth_info (id, event_time, location, magnitude)
 VALUES (UUID(), '2025-01-30 04:05:00', 'Los Angeles', 4.7);

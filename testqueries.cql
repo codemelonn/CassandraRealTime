@@ -15,7 +15,6 @@ FROM earthquake_damage
 WHERE earthquake_id = ba275b5c-8ddf-4499-b1b8-594f6757053a;
 
 
-
 -- Query 2: Get all people injured in a specific earthquake
 SELECT name, injury_type, status
 FROM person_damage
@@ -33,3 +32,14 @@ USING TTL 86400;
 
 select*
 from earth_info;
+
+--Query 5: Get earthquake by location
+SELECT * FROM earth_info WHERE location = 'Los Angeles'; 
+
+SELECT * FROM earthquake_by_location
+WHERE location = 'Los Angeles';
+
+--Query 6: Most Recent Damage Reports
+SELECT * FROM earthquake_damage
+WHERE earthquake_id = ba275b5c-8ddf-4499-b1b8-594f6757053a
+LIMIT 5;
