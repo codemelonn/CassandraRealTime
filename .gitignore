@@ -1,0 +1,24 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# .env environment variables
+.env
+
+# Logs
+logs
+*.log
+log/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Docker artifacts
+*.pid
+*.seed
+docker-compose.override.yml
+
+# Cassandra data volumes (if mapped)
+cassandra_data/
