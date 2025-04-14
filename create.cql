@@ -3,28 +3,30 @@ WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 
 USE earthquakes_demo; 
 CREATE TABLE IF NOT EXISTS earth_info (
-    id UUID PRIMARY KEY,
-    event_time TIMESTAMP,
-    location TEXT,
-    magnitude FLOAT
+    id              UUID PRIMARY KEY,
+    event_time      TIMESTAMP,
+    location        TEXT,
+    magnitude       FLOAT
 );
 
 -- Infrastructure Damage Table
 CREATE TABLE IF NOT EXISTS earthquake_damage (
-    earthquake_id UUID,
-    damage_id TIMEUUID,
-    damage_type TEXT,
-    estimated_cost DECIMAL,
+    earthquake_id       UUID,
+    damage_id           TIMEUUID,
+    damage_type         TEXT,
+    estimated_cost      DECIMAL,
+
     PRIMARY KEY (earthquake_id, damage_id)
 ) WITH CLUSTERING ORDER BY (damage_id DESC);
 
 -- Person Damage Table
 CREATE TABLE IF NOT EXISTS person_damage (
-    earthquake_id UUID,
-    person_id TIMEUUID,
-    name TEXT,
-    injury_type TEXT,
-    status TEXT,
+    earthquake_id       UUID,
+    person_id           TIMEUUID,
+    name                TEXT,
+    injury_type         TEXT,
+    status              TEXT,
+    
     PRIMARY KEY (earthquake_id, person_id)
 ) WITH CLUSTERING ORDER BY (person_id DESC);
 

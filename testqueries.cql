@@ -1,3 +1,5 @@
+USE earthquakes_demo; 
+
 --looks of the tables
 select*
 from earth_info;
