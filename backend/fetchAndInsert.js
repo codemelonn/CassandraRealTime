@@ -1,60 +1,85 @@
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
-const client = require('./cassandra');
+const cassandra = require('./cassandra');
+
+/* 
+    - This function connects to the USGS earthquake API
+    - pulls recent data and gives us back a list of individual earthquake events
+*/
+
+let totalEarthquakes = []; 
 
 async function fetchEarthquakes() {
-  const url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=5&limit=10';
-  const response = await fetch(url);
-  const data = await response.json();
-  return data.features;
+   
+    for (let year = 2023; year <= 2024; year++) {
+        for (let month = 1; month <= 12; month++) {
+            const start = `${year}-${month.toString().padStart(2, '0')}-01`;
+            const end = `${year}-${month.toString().padStart(2, '0')}-28`; // safe for all months
+
+            const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${start}&endtime=${end}`;
+            try {
+                const response = await fetch(url);
+                console.log(`📡 ${start} - Status: ${response.status}`);
+                const data = await response.json();
+
+                if (Array.isArray(data.features)) {
+                    totalEarthquakes.push(...data.features);
+                }
+            } catch (error) {
+                console.log(`❌ Error in parsing through ${start}: ${error.message}`);
+            }
+        }
+    }
+
+    return totalEarthquakes;
 }
 
-function extractCountry(place) {
-  if (!place) return null;
-  const parts = place.split(',');
-  return parts.length > 1 ? parts[parts.length - 1].trim() : null;
-}
 
-async function insertEarthquake(eq) {
-  const props = eq.properties;
-  const coords = eq.geometry.coordinates;
-  const id = eq.id;
-  const date = new Date(props.time);
+async function insertEarthquakeData(eq) {
 
-  const query = `
+    const query = `
     INSERT INTO earthquake_by_day (
       date_occurred, time_occurred, id, magnitude, depth,
       region, country, latitude, longitude
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+    `;
 
-  const params = [
-    date.toISOString().split('T')[0], // date_occurred (YYYY-MM-DD)
-    date,                              // time_occurred (timestamp)
-    id,
-    props.mag,
-    coords[2],                         // depth
-    props.place,
-    extractCountry(props.place),
-    coords[1],                         // lat
-    coords[0],                         // lon
-  ];
+    for (const feature of eq) {
+        try {
 
-  await client.execute(query, params, { prepare: true });
+            const time = new Date(feature.properties.time);
+            const date = time.toISOString().split('T')[0];        
+            const id = feature.id; 
+            const magnitude = feature.properties.mag; 
+            const depth = feature.geometry.coordinates[2]; 
+            const region = feature.properties.place?.split(',')[0] || 'Unknown';
+            const country = feature.properties.place?.split(', ').pop() || 'Unknown';
+            const latitude = feature.geometry.coordinates[1];
+            const longitude = feature.geometry.coordinates[0];
+
+            await cassandra.execute(query, [
+                date,
+                time,
+                id,
+                magnitude,
+                depth,
+                region,
+                country,
+                latitude,
+                longitude
+            ], { prepare: true });
+
+            console.log(`✅ Inserted earthquake ${id}`);
+            console.log(`Inserted ${totalEarthquakes.length}!`);
+        } catch (err) {
+            console.error(`❌ Failed to insert ${feature.id}: ${err.message}`);
+        }
+    }
+
 }
 
 async function main() {
-  const earthquakes = await fetchEarthquakes();
-
-  for (const eq of earthquakes) {
-    try {
-      await insertEarthquake(eq);
-      console.log(`✅ Inserted earthquake ${eq.id}`);
-    } catch (err) {
-      console.error(`❌ Failed to insert ${eq.id}:`, err.message);
-    }
-  }
-
-  await client.shutdown();
+    await fetchEarthquakes(); 
+    await insertEarthquakeData(totalEarthquakes); 
 }
 
 main();

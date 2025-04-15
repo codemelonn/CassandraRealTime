@@ -1,6 +1,8 @@
 CREATE KEYSPACE IF NOT EXISTS earthquakedata
 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}; 
 
+USE earthquakedata; 
+
 -- this table will be a partition for storing earthquake data per the day it happens
 -- we will cluster this by the time it occurred in descending order
 

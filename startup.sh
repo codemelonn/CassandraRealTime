@@ -13,4 +13,3 @@ echo "🧪 Inserting test data from testqueries.cql..."
 #docker exec -i cassandra cqlsh < cassandra/testqueries.cql
 
 echo "✅ Setup complete. You can now use 'docker exec -it cassandra cqlsh' to interact with Cassandra."
-s
