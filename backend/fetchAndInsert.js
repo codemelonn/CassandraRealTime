@@ -10,7 +10,7 @@ let totalEarthquakes = [];
 
 async function fetchEarthquakes() {
    
-    for (let year = 2023; year <= 2024; year++) {
+    for (let year = 2023; year <= 2023; year++) {
         for (let month = 1; month <= 12; month++) {
             const start = `${year}-${month.toString().padStart(2, '0')}-01`;
             const end = `${year}-${month.toString().padStart(2, '0')}-28`; // safe for all months
@@ -36,6 +36,11 @@ async function fetchEarthquakes() {
 
 async function insertEarthquakeData(eq) {
 
+    // tested this batch size, this is the highest number we can use before it wont accept the batch size
+    const BATCH_SIZE = 275; 
+    const totalBatches = Math.ceil(eq.length / BATCH_SIZE); 
+    let count = 0; 
+
     const query = `
     INSERT INTO earthquake_by_day (
       date_occurred, time_occurred, id, magnitude, depth,
@@ -43,38 +48,55 @@ async function insertEarthquakeData(eq) {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    for (const feature of eq) {
+    for (let i = 0; i < totalBatches; i++) {
+
+        const batch = eq.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE); 
+        const queries = []; 
+
+        for (const feature of batch) {
+            try {
+
+                const time = new Date(feature.properties.time);
+                const date = time.toISOString().split('T')[0];        
+                const id = feature.id; 
+                const magnitude = feature.properties.mag; 
+                const depth = feature.geometry.coordinates[2]; 
+                const region = feature.properties.place?.split(',')[0] || 'Unknown';
+                const country = feature.properties.place?.split(', ').pop() || 'Unknown';
+                const latitude = feature.geometry.coordinates[1];
+                const longitude = feature.geometry.coordinates[0];
+    
+                queries.push({
+                    query, 
+                    params: [
+                        date,
+                        time,
+                        id,
+                        magnitude,
+                        depth,
+                        region,
+                        country,
+                        latitude,
+                        longitude
+                    ]
+                }); 
+
+                count++; 
+            } catch (err) {
+                console.error(`❌ Skipped ${feature.id}: ${err.message}`);
+            }
+        } // end of for loop 
+
         try {
-
-            const time = new Date(feature.properties.time);
-            const date = time.toISOString().split('T')[0];        
-            const id = feature.id; 
-            const magnitude = feature.properties.mag; 
-            const depth = feature.geometry.coordinates[2]; 
-            const region = feature.properties.place?.split(',')[0] || 'Unknown';
-            const country = feature.properties.place?.split(', ').pop() || 'Unknown';
-            const latitude = feature.geometry.coordinates[1];
-            const longitude = feature.geometry.coordinates[0];
-
-            await cassandra.execute(query, [
-                date,
-                time,
-                id,
-                magnitude,
-                depth,
-                region,
-                country,
-                latitude,
-                longitude
-            ], { prepare: true });
-
-            console.log(`✅ Inserted earthquake ${id}`);
-            console.log(`Inserted ${totalEarthquakes.length}!`);
+            await cassandra.batch(queries, { prepare: true });
+            console.log(`📦 Batch ${i + 1}/${totalBatches} inserted (${count} total records so far)`);  
         } catch (err) {
-            console.error(`❌ Failed to insert ${feature.id}: ${err.message}`);
+            console.error(`❌ Failed to insert batch ${i + 1}: ${err.message}`);
         }
-    }
 
+    } // end of try catch 
+
+    console.log(`✅ Done! Inserted total ${count} records.`); 
 }
 
 async function main() {
