@@ -1,44 +1,40 @@
-##looks of the tables
-select*
-from earth_info;
-
-select *
-from earthquake_damage;
-
-select *
-from person_damage;
+USE earthquakedata; 
 
 
-##get all damages for a specific earthquake
-SELECT ei.location, ed.damage_type, ed.estimated_cost
-FROM earth_info ei
-JOIN earthquake_damage ed ON ei.id = ed.earthquake_id
-WHERE ei.id = 'ba275b5c-8ddf-4499-b1b8-594f6757053a';
-
-
-SELECT ei.location, ed.damage_type, ed.estimated_cost
-FROM earth_info ei , earthquake_damage ed
-WHERE ei.id = ed.earthquake_id and ei.id = 'ba275b5c-8ddf-4499-b1b8-594f6757053a';
-
-
-##cost of damages to Los Angeles
-SELECT ei.location, SUM(ed.estimated_cost) AS total_cost
-FROM earth_info ei, earthquake_damage ed 
-where ei.id = ed.earthquake_id
-GROUP BY ei.location;
-
-
-##List earthquakes with more than 1 damage report
-SELECT ei.*
-FROM earth_info ei
-WHERE ei.id IN (
-    SELECT earthquake_id
-    FROM earthquake_damage
-    GROUP BY earthquake_id
-    HAVING COUNT(*) > 1
-);
-
-##Earthquakes above magnitude 5 in California
+-- Query 1: get all earthquakes on a specific day, sorted by time
 SELECT * 
-FROM earth_info
-WHERE magnitude > 5 AND location LIKE '%San Francisco%';
+FROM earthquake_by_day
+WHERE date_occurred = '2023-03-15' and  magnitude >= 2
+;
+
+
+-- Query 2: find the earliest earthquake on a given day 
+SELECT * 
+FROM earthquake_by_day
+WHERE date_occurred = '2023-03-15'
+ORDER BY time_occurred ASC
+LIMIT 1;
+
+
+-- Query 3: get all earthquakes in a region on a day 
+SELECT * FROM earthquake_by_day
+WHERE date_occurred = '2023-03-15';
+
+
+
+-- Query 4: filter by magnitude on a given day 
+SELECT * 
+FROM earthquake_by_day
+WHERE date_occurred = '2023-03-14' 
+    AND magnitude > 5.0;
+
+
+
+-- Query 5: look up a specific earthquake on a known date 
+SELECT * 
+FROM earthquake_by_day
+WHERE date_occurred = '2023-10-24'
+    AND time_occurred = '2023-10-24 18:00:40.080000+0000'
+    AND id = 'mb90030798';
+
+
