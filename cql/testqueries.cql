@@ -39,3 +39,10 @@ WHERE date_occurred = '2023-10-24'
     AND id = 'mb90030798';
 
 
+-- Query 6: Insert TTL data (Auto-expiring)
+INSERT INTO earth_info (id, event_time, location, magnitude)
+VALUES (uuid(), toTimestamp(now()), 'Temporary Location', 4.2)
+USING TTL 30; -- expires in 30 sec
+
+SELECT *
+FROM earth_info;

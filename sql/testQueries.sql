@@ -4,8 +4,7 @@ USE earthquakedata;
 -- Query 1: get all earthquakes on a specific day, sorted by time
 SELECT * 
 FROM earthquake_by_day
-WHERE date_occurred = '2023-03-15' and  magnitude >= 2
-;
+WHERE date_occurred = '2023-03-15' and  magnitude >= 2;
 
 
 -- Query 2: find the earliest earthquake on a given day 

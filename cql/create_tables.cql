@@ -23,3 +23,11 @@ CREATE TABLE earthquake_by_day (
 
     PRIMARY KEY ((date_occurred), time_occurred, id)
 ) WITH CLUSTERING ORDER BY (time_occurred DESC); 
+
+CREATE TABLE IF NOT EXISTS earth_info (
+    id              CHAR(36),
+    event_time      DATETIME,
+    location        VARCHAR(255),
+    magnitude       FLOAT,
+    PRIMARY KEY(id)
+);
