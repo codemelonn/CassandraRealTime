@@ -10,7 +10,7 @@ let totalEarthquakes = [];
 
 async function fetchEarthquakes() {
    
-    for (let year = 2023; year <= 2023; year++) {
+    for (let year = 2010; year <= 2023; year++) {
         for (let month = 1; month <= 12; month++) {
             const start = `${year}-${month.toString().padStart(2, '0')}-01`;
             const end = `${year}-${month.toString().padStart(2, '0')}-28`; // safe for all months

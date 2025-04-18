@@ -94,15 +94,24 @@ docker exec -it cassandra cqlsh
 ## Running the Demo
 
 1. Inside the Cassandra shell, run the setup script:
+###### You may need to run the bash command chmod +x 'sh_file_name.sh' to successfully run these files
 
 ```bash
-source 'create.cql';
+./initialize/startup.sh
 ```
 
-2. Add test data and query it with:
+2. Insert data from USGS API into Cassandra and MySQL
 
 ```bash
-source 'testqueries.cql';
+./initialize/insert_cql.sh
+./initialize/insert_sql.sh
+```
+
+4. Run queries on the machines with the test files:
+
+```bash
+./initialize/run_cql.sh
+./initialize/run_sql.sh
 ```
 
 This will create the keyspace, define the table, and insert sample earthquakes for querying.
