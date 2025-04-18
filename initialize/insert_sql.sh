@@ -1,7 +1,6 @@
-
-
-echo "Starting your data insertions!" 
+echo " " 
+echo "Starting your data insertions into MySQL!" 
 
 echo " " 
-node mysql_backend/insertMySql.js
+node mysql_backend/insertmysql.js
 

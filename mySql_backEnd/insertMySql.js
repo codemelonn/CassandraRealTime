@@ -1,4 +1,4 @@
-const mysql = require('./mySql');
+const mysql = require('./mysql');
 
 /* 
     - This function connects to the USGS earthquake API
@@ -9,7 +9,7 @@ let totalEarthquakes = [];
 
 async function fetchEarthquakes() {
    
-    for (let year = 2010; year <= 2023; year++) {
+    for (let year = 2000; year <= 2023; year++) {
         for (let month = 1; month <= 12; month++) {
             const start = `${year}-${month.toString().padStart(2, '0')}-01`;
             const end = `${year}-${month.toString().padStart(2, '0')}-28`; // safe for all months
@@ -46,8 +46,9 @@ async function insertEarthquakeDataMySQL(eq) {
 
         for (const feature of batch) {
             try {
-                const time = new Date(feature.properties.time);
-                const date = time.toISOString().split('T')[0];
+                const rawTime = new Date(feature.properties.time);
+                const date = rawTime.toISOString().split('T')[0]; // ✅ get date from the raw Date object
+                const time = rawTime.toISOString().split('.')[0].replace('T', ' '); // ✅ format for MySQL                
                 const id = feature.id;
                 const magnitude = feature.properties.mag;
                 const depth = feature.geometry.coordinates[2];

@@ -9,7 +9,7 @@ USE earthquakedata;
 -- since cassandra is non relational we don't need to normalize the data,
 -- and reuse tables like in sql
 
-CREATE TABLE earthquake_by_day (
+CREATE TABLE IF NOT EXISTS earthquake_by_day (
 
     date_occurred       DATE, 
     time_occurred       TIMESTAMP, 
@@ -25,9 +25,9 @@ CREATE TABLE earthquake_by_day (
 ) WITH CLUSTERING ORDER BY (time_occurred DESC); 
 
 CREATE TABLE IF NOT EXISTS earth_info (
-    id              CHAR(36),
-    event_time      DATETIME,
-    location        VARCHAR(255),
+    id              UUID,
+    event_time      TIMESTAMP,
+    location        TEXT,
     magnitude       FLOAT,
     PRIMARY KEY(id)
 );

@@ -6,6 +6,7 @@ const pool = mysql.createPool({
   user: 'root',
   password: 'password',
   database: 'earthquakedata',
+  port: 3307, 
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0

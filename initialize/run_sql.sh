@@ -1,4 +1,4 @@
-echo "Running your Cassandra queries!" 
+echo "Running your MySQL queries!" 
 echo " " 
 sleep 2
 
