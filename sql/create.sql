@@ -1,6 +1,6 @@
 -- Create Database
-CREATE DATABASE IF NOT EXISTS earthquakes_demo;
-USE earthquakes_demo;
+CREATE DATABASE IF NOT EXISTS earthquakedata;
+USE earthquakedata;
 
 
 CREATE TABLE IF NOT EXISTS earthquake_by_day (

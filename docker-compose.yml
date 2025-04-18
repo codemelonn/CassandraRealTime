@@ -23,7 +23,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: earthquakes
+      MYSQL_DATABASE: earthquakedata
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
