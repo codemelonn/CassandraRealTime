@@ -1,42 +1,35 @@
 USE earthquakedata; 
 
 
--- Query 1: get all earthquakes on a specific day, sorted by time
-SELECT * 
-FROM earthquake_by_day
-WHERE date_occurred = '2023-02-10'
-LIMIT 40;
-
-
--- Query 2: find the earliest earthquake on a given day 
-SELECT * 
-FROM earthquake_by_day
-WHERE date_occurred = '2023-03-10'
-ORDER BY time_occurred ASC
-LIMIT 1;
-
-
--- Query 3: get all earthquakes in a region on a day 
+-- 1. Select 5 earthquakes on a known active date
 SELECT * FROM earthquake_by_day
-WHERE date_occurred = '2023-04-02'
-LIMIT 40;
+WHERE date_occurred = '2015-12-04'
+LIMIT 5;
 
+-- 2. Find the first 5 earthquakes on that same day, sorted by time
+SELECT * FROM earthquake_by_day
+WHERE date_occurred = '2015-12-04'
+ORDER BY time_occurred ASC
+LIMIT 5;
 
+-- 3. Filter by country and magnitude (Alaska, magnitude > 1.0)
+SELECT * FROM earthquake_by_day
+WHERE date_occurred = '2015-12-04'
+  AND country = 'Alaska'
+  AND magnitude > 1.0
+LIMIT 5;
 
--- Query 4: filter by magnitude on a given day 
-SELECT * 
-FROM earthquake_by_day
-WHERE date_occurred = '2023-01-24' 
-    AND magnitude > 5.0
-    LIMIT 40;
+-- 4. Filter by magnitude and depth (mag > 1.5 and depth > 5)
+SELECT * FROM earthquake_by_day
+WHERE date_occurred = '2015-12-04'
+  AND magnitude > 1.5
+  AND depth > 5
+LIMIT 5;
 
-
-
--- Query 5: look up a specific earthquake on a known date 
-SELECT * 
-FROM earthquake_by_day
-WHERE date_occurred = '2023-10-24'
-    AND time_occurred = '2023-10-24 18:00:40'
-    AND id = 'mb90030798';
+-- 5. Filter by region using exact match
+SELECT * FROM earthquake_by_day
+WHERE date_occurred = '2015-12-04'
+  AND region = '17 km NNW of Bridgeport'
+LIMIT 5;
 
 
